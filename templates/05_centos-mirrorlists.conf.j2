@@ -1,0 +1,11 @@
+#centos-mirrorlists
+[mirrorlists]
+       path = /var/lib/centos-mirrorlist/views/
+       comment = CentOS Mirror Lists
+       exclude = logs
+       read only = no
+       list = no
+       hosts allow = {% for ip in mirrorlist_allow_push_from %}{{ ip }} {% endfor %}
+
+       hosts deny = *
+

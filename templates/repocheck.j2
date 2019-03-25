@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#
+# CentOS mirrorlist repos.json check
+# Called by : cron, managed by: Ansible
+# purposes: Verifies that we have a new repos.json file pushed by mirmon
+#  if so, reload each instance to use new config
+
+PATH=$PATH:/usr/local/bin:/sbin:/usr/sbin/
+
+repos_checksum=$(sha256sum /var/lib/centos-mirrorlist/views/repos.json |awk '{print $1}')
+previous_checksum=$(cat /var/lib/centos-mirrorlist/previous_checksum)
+
+if [ "${repos_checksum}" == "${previous_checksum}" ] ; then
+  echo "checksums are equals" >/dev/null 2>&1
+else
+  echo "${repos_checksum}" > /var/lib/centos-mirrorlist/previous_checksum
+  for i in {1..{{ mirrorlist_workers }}} ; do sleep 2 ; systemctl restart centos-ml-instance@${i}  ;done
+  for i in {1..{{ mirrorlist_workers }}} ; do sleep 2 ; systemctl restart centos-isoredirect-instance@${i}  ;done
+fi
+

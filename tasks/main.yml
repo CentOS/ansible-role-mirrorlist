@@ -1,1 +1,108 @@
 # Defaults tasks for role mirrorlist
+- include_role:
+    name: httpd 
+- include_role:
+    name: rsyncd
+- include_role:
+    name: geoip2
+
+- name: Ensuring we have needed pkgs for mirrorlist backend
+  yum:
+    name: "{{ ml_pkgs }}"
+    state: latest
+  vars:
+    ml_pkgs:
+      - python-bottle
+      - python-ipaddr
+      - python-paste
+
+- name: Ensuring we have local unprivileged user to start workers
+  user:
+    name: "{{ mirrorlist_worker_user }}"
+    home: "/home/{{ mirrorlist_worker_user }}-home/"
+
+- name: Log directory
+  file:
+    path: /var/log/centos-mirrorlist
+    state: directory
+    mode: 0755
+    owner: "{{ mirrorlist_worker_user }}"
+    group: "{{ mirrorlist_worker_user }}"
+
+- name: Code directory
+  copy:
+    src: centos-mirrorlist
+    dest: /var/lib/
+    mode: 0750
+    owner: "{{ mirrorlist_worker_user }}"
+    group: "{{ mirrorlist_worker_user }}"
+ 
+- name: Adding workers to systemd
+  copy:
+    src: "centos-mirrorlist/{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+  register: workers_systemd
+  with_items:
+    - centos-isoredirect-instance@.service
+    - centos-ml-instance@.service
+  tags:
+    - systemd
+
+- name: Reloading systemd if needed
+  shell: /usr/bin/systemctl daemon-reload
+  when: workers_systemd is changed
+  tags:
+    - systemd
+
+- name: Ensuring mirrorlist worker[s] is/are started
+  service:
+    name: "centos-ml-instance@{{ item }}"
+    state: started
+    enabled: True
+  with_sequence: count={{ mirrorlist_workers }}
+  tags:
+    - systemd
+
+- name: Ensuring isoredirect worker[s] is/are started
+  service:
+    name: "centos-isoredirect-instance@{{ item }}"
+    state: started
+    enabled: True
+  with_sequence: count={{ mirrorlist_workers }}
+  tags:
+    - systemd
+
+- name: Distributing the repos.json check file
+  template:
+    src: repocheck.j2
+    dest: /var/lib/centos-mirrorlist/scripts/repocheck
+    mode: 0755
+    owner: centos
+
+- name: Enabling cron job for repocheck
+  cron:
+    name: repos.json lists check
+    minute: "*"
+    job: /var/lib/centos-mirrorlist/scripts/repocheck
+
+- name: Distributing vhost config for mirrorlist/isoredirect
+  template:
+    src: 95_mirrorlist_backend.conf.j2
+    dest: /etc/httpd/conf.d/95_mirrorlist_backend.conf
+  notify: restart_httpd
+
+- name: Distributing rsync target to receive up2date lists
+  template:
+    src: 05_centos-mirrorlists.conf.j2
+    dest: /etc/rsyncd.d/05_centos-mirrorlists.conf
+  notify: rebuild_rsyncd  
+
+- name: selinux | enabling booleans
+  seboolean:
+    name: "{{ item }}"
+    state: True
+    persistent: yes
+  with_items:
+    - rsync_full_access 
+    - httpd_can_network_connect

@@ -1,1 +1,18 @@
 # Defaults variables for role mirrorlist
+# Number of backend workers for mod_proxy_balander for httpd frontend
+mirrorlist_workers: 5
+# Base tcp port from which the workers will be listening on (incremented by number of workers)
+mirrorlist_ml_workers_baseport: 8001
+mirrorlist_iso_workers_baseport: 8101
+
+# Unprivileged user that will run the workers instances
+mirrorlist_worker_user: centos
+
+
+
+# Allow which master mirror crawler to push to use the updated lists
+mirrorlist_allow_push_from:
+  - 192.168.1.1
+  - 192.168.1.2
+
+
