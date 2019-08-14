@@ -36,7 +36,10 @@
     mode: 0750
     owner: "{{ mirrorlist_worker_user }}"
     group: "{{ mirrorlist_worker_user }}"
- 
+  tags:
+    - code
+  notify: restart_ml_workers
+
 - name: Adding workers to systemd
   copy:
     src: "centos-mirrorlist/{{ item }}"

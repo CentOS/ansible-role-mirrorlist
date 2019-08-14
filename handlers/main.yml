@@ -1,1 +1,6 @@
 # Defaults handlers for role mirrorlist
+- name: restart_ml_workers
+  service:
+    name: "centos-ml-instance@{{ item }}"
+    state: restarted
+  with_sequence: count={{ mirrorlist_workers }}
