@@ -4,3 +4,10 @@
     name: "centos-ml-instance@{{ item }}"
     state: restarted
   with_sequence: count={{ mirrorlist_workers }}
+
+- name: restart_iso_workers
+  service:
+    name: "centos-isoredirect-instance@{{ item }}"
+    state: restarted
+  with_sequence: count={{ mirrorlist_workers }}
+

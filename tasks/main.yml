@@ -38,7 +38,9 @@
     group: "{{ mirrorlist_worker_user }}"
   tags:
     - code
-  notify: restart_ml_workers
+  notify: 
+    - restart_ml_workers
+    - restart_iso_workers
 
 - name: Adding workers to systemd
   copy:
