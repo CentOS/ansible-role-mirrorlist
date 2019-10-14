@@ -3,6 +3,10 @@
     name: httpd 
 - include_role:
     name: rsyncd
+  tags:
+    - acl
+    - rsync
+
 - include_role:
     name: geoip2
 
@@ -102,6 +106,9 @@
     src: 05_centos-mirrorlists.conf.j2
     dest: /etc/rsyncd.d/05_centos-mirrorlists.conf
   notify: rebuild_rsyncd  
+  tags:
+    - rsync
+    - acl
 
 - name: selinux | enabling booleans
   seboolean:
