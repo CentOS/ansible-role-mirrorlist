@@ -1,6 +1,7 @@
 # Defaults tasks for role mirrorlist
 - include_role:
     name: httpd 
+
 - include_role:
     name: rsyncd
   tags:
@@ -45,6 +46,12 @@
   notify: 
     - restart_ml_workers
     - restart_iso_workers
+
+- name: Needed for static files for centos theme
+  file:
+    state: link
+    src: /var/www/centos-design
+    dest: /var/lib/centos-mirrorlist/centos-design
 
 - name: Adding workers to systemd
   copy:

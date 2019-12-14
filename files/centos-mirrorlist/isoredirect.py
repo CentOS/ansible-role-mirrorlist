@@ -116,7 +116,7 @@ Packaged copies of various torrent clients for CentOS can be found in the reposi
     try:
       if os.path.isfile('views/%s' % (mirrorlist_file)):
         if i == 0 and c != "fallback":
-          content += 'The following mirrors in your region should have the ISO images available:</b><br><br>\n'
+          content += '<div class="alert alert-success" role="alert">The following mirrors in your region should have the ISO images available:</b><br></div>\n'
           header_printed = True
           mirrors_from_primary_region = True
         if not header_printed:
@@ -144,13 +144,13 @@ Packaged copies of various torrent clients for CentOS can be found in the reposi
       return template("isoredirect.tpl", content=content + "+ others, see the full list of mirrors: <a href='%s'>%s</a>%s" % (mirrorlistpage, mirrorlistpage, footer))
 
     if i == 0 and mirrors_from_primary_region:
-      content += "<br>Other mirrors further away:<br><br>\n"
+      content += '<br><div class="alert alert-info" role="alert"><b>Other mirrors further away:</b></div>\n'
 
   return template("isoredirect.tpl", content=content + footer)
 
 
 # alternatively, arrange the web server config so that these static files are served by the web server
-@route('/<pth:re:(favicon|HEADER.images).*>')
+@route('/<pth:re:(favicon|HEADER.images|centos-design).*>')
 def files(pth):
   return static_file(pth, root='.')
 
@@ -161,7 +161,10 @@ def nothere(pth):
     # make sure invalid URLs won't be indexed by web crawlers
     response.status=404
   return template("isoredirect.tpl", content="\
-To use the CentOS ISO Redirect Service, please include the directory in the URL. Some examples:<br><br>\n\
+<div class='alert alert-info' role='alert'>\n\
+<b>To use the CentOS ISO Redirect Service, please include the directory in the URL. </b><br>\n\
+Some examples:\n\
+</div>\n\
 <table border=0>\n\
 <tr><td><b><a href='/centos/8-stream/isos/x86_64/'>http://isoredirect.centos.org/centos/8-stream/isos/x86_64/</a></b></td><td>for CentOS Stream x86_64 iso images</td></tr>\n\
 <tr><td><b><a href='/centos/8/isos/x86_64/'>http://isoredirect.centos.org/centos/8/isos/x86_64/</a></b></td><td>for CentOS 8 x86_64 iso images</td></tr>\n\
