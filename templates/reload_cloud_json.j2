@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#
+# CentOS mirrorlist reload_cloud_json
+# Called by : cron, managed by: Ansible
+# purposes: Download .json from cloud providers with up2date list for ipv4/ipv6
+#  and reload each mirrorlist instance after
+
+PATH=$PATH:/usr/local/bin:/sbin:/usr/sbin/
+cd /var/lib/centos-mirrorlist
+/var/lib/centos-mirrorlist/scripts/generate_clouds_subnets  
+for i in {1..{{ mirrorlist_workers }}} ; do sleep 2 ; systemctl restart centos-ml-instance@${i}  ;done
+

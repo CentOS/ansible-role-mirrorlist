@@ -19,6 +19,7 @@
     ml_pkgs:
       - python-bottle
       - python-ipaddr
+      - python-ipaddress
       - python-paste
 
 - name: Ensuring we have local unprivileged user to start workers
@@ -46,6 +47,12 @@
   notify: 
     - restart_ml_workers
     - restart_iso_workers
+
+- name: Ensuring we have clouds_subnets.json
+  command: /var/lib/centos-mirrorlist/scripts/generate_clouds_subnets
+  args:
+    creates: /var/lib/centos-mirrorlist/clouds_subnets.json
+    chdir: /var/lib/centos-mirrorlist
 
 - name: Needed for static files for centos theme
   file:
@@ -91,10 +98,13 @@
 
 - name: Distributing the repos.json check file
   template:
-    src: repocheck.j2
-    dest: /var/lib/centos-mirrorlist/scripts/repocheck
+    src: "{{ item }}.j2"
+    dest: "/var/lib/centos-mirrorlist/scripts/{{ item }}"
     mode: 0755
     owner: centos
+  with_items:
+    - repocheck
+    - reload_cloud_json
 
 - name: Enabling cron job for repocheck
   cron:
@@ -102,6 +112,15 @@
     minute: "*"
     job: /var/lib/centos-mirrorlist/scripts/repocheck
 
+- name: Enabling cron job for reload_cloud_json
+  cron:
+    name: reload clouds json
+    minute: "15"
+    hour: "7"
+    weekday: "0"
+    job: /var/lib/centos-mirrorlist/scripts/reload_cloud_json
+  tags:
+    - cron
 - name: Distributing vhost config for mirrorlist/isoredirect
   template:
     src: 95_mirrorlist_backend.conf.j2
