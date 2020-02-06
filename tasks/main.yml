@@ -8,6 +8,15 @@
     - acl
     - rsync
 
+- name: Distributing rsync target to receive up2date lists
+  template:
+    src: 05_centos-mirrorlists.conf.j2
+    dest: /etc/rsyncd.d/05_centos-mirrorlists.conf
+  notify: rebuild_rsyncd  
+  tags:
+    - rsync
+    - acl
+
 - include_role:
     name: geoip2
 
@@ -121,20 +130,12 @@
     job: /var/lib/centos-mirrorlist/scripts/reload_cloud_json
   tags:
     - cron
+
 - name: Distributing vhost config for mirrorlist/isoredirect
   template:
     src: 95_mirrorlist_backend.conf.j2
     dest: /etc/httpd/conf.d/95_mirrorlist_backend.conf
   notify: restart_httpd
-
-- name: Distributing rsync target to receive up2date lists
-  template:
-    src: 05_centos-mirrorlists.conf.j2
-    dest: /etc/rsyncd.d/05_centos-mirrorlists.conf
-  notify: rebuild_rsyncd  
-  tags:
-    - rsync
-    - acl
 
 - name: selinux | enabling booleans
   seboolean:
@@ -144,3 +145,5 @@
   with_items:
     - rsync_full_access 
     - httpd_can_network_connect
+
+- include_tasks: monitoring.yml

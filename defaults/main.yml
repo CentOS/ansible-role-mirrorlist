@@ -8,11 +8,15 @@ mirrorlist_iso_workers_baseport: 8101
 # Unprivileged user that will run the workers instances
 mirrorlist_worker_user: centos
 
-
-
 # Allow which master mirror crawler to push to use the updated lists
 mirrorlist_allow_push_from:
   - 192.168.1.1
   - 192.168.1.2
+
+# Zabbix/monitoring part
+zabbix_mirrorlist_templates:
+  - Template CentOS Mirrorlist
+zabbix_mirrorlist_groups:
+  - CentOS Mirrorlist servers
 
 
