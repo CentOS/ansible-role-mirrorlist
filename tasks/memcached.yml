@@ -1,0 +1,24 @@
+- name: Installing required pkgs 
+  yum:
+    name: ['memcached', 'python-memcached']
+    state: installed
+
+- name: Configuring local memcached
+  template:
+    src: memcached.j2
+    dest: /etc/sysconfig/memcached
+  notify:
+    - restart_memcached
+
+- name: Ensuring memcached is started
+  service:
+    name: memcached
+    state: started
+    enabled: True
+
+- name: Allowing httpd to reach memcached
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+    

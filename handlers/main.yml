@@ -11,3 +11,7 @@
     state: restarted
   with_sequence: count={{ mirrorlist_workers }}
 
+- name: restart_memcached
+  service:
+    name: memcached
+    state: restarted

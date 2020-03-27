@@ -13,6 +13,10 @@ mirrorlist_allow_push_from:
   - 192.168.1.1
   - 192.168.1.2
 
+# Tuning for memcached 
+mirrorlist_mc_maxconn: 4096
+mirrorlist_mc_cache: 128
+
 # Zabbix/monitoring part
 zabbix_mirrorlist_templates:
   - Template CentOS Mirrorlist

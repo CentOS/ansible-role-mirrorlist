@@ -9,6 +9,9 @@ import time
 
 geodb = geoip2.database.Reader('/usr/share/GeoIP/GeoLite2-City.mmdb')
 
+# list of cli tools for which we'll just directly redirect instead of giving a list
+cli_user_agents= [ 'curl', 'wget', 'packer', 'ansible-httpget' ]
+
 # Json file holding the nearby countries list, generated from geo_cc.pm with convert_ccgroups_to_json.pl
 with open('ccgroups.json') as ccgroupjson:
   ccgroups = json.load(ccgroupjson)
@@ -85,9 +88,11 @@ Packaged copies of various torrent clients for CentOS can be found in the reposi
   # if using curl/wget and requesting a file, redirect immediately to the first mirror
   fast_redirect = False
   try:
-    agent = request.environ.get('HTTP_USER_AGENT')[:5].lower()
-    if (agent == "curl/" or agent == "wget/") and filename != "":
-      fast_redirect = True
+    agent = request.environ.get('HTTP_USER_AGENT').lower()
+    for cli in cli_user_agents:
+      if cli in agent:
+        fast_redirect = True
+        break
   except:
     pass
 

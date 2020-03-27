@@ -7,6 +7,7 @@
   tags:
     - acl
     - rsync
+- include_tasks: memcached.yml
 
 - name: Distributing rsync target to receive up2date lists
   template:
