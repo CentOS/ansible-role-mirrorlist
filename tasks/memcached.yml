@@ -7,6 +7,7 @@
   template:
     src: memcached.j2
     dest: /etc/sysconfig/memcached
+    mode: 0644
   notify:
     - restart_memcached
 
