@@ -184,8 +184,6 @@ Some examples:\n\
 <tr><td><b><a href='/altarch/7/isos/power9/'>http://isoredirect.centos.org/altarch/7/isos/power9/</a></b></td><td>for CentOS 7 AltArch POWER9 iso images</td></tr>\n\
 <tr><td><b><a href='/altarch/7/isos/ppc64/'>http://isoredirect.centos.org/altarch/7/isos/ppc64/</a></b></td><td>for CentOS 7 AltArch ppc64 iso images</td></tr>\n\
 <tr><td><b><a href='/altarch/7/isos/ppc64le/'>http://isoredirect.centos.org/altarch/7/isos/ppc64le/</a></b></td><td>for CentOS 7 AltArch ppc64le iso images</td></tr>\n\
-<tr><td><b><a href='/centos/6/isos/x86_64/'>http://isoredirect.centos.org/centos/6/isos/x86_64/</a></b></td><td>for CentOS 6 x86_64 iso images</td></tr>\n\
-<tr><td><b><a href='/centos/6/isos/i386/'>http://isoredirect.centos.org/centos/6/isos/i386/</a></b></td><td>for CentOS 6 i386 iso images</td></tr>\n\
 </table>")
   
 run(server=PasteServer, port=8000, debug=False, reloader=True)
